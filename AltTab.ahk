@@ -122,8 +122,10 @@ since 25-04-06:
     Small_to_Large_Ratio =1.6 ; height of small rows compared to large rows
 
   ; Colours in RGB hex
-    Tab_Colour =C4C5FB
-    Listview_Colour =E1E2FD ; does not need converting as only used for background
+    Tab_Colour =005F87
+    ;Tab_Colour =C4C5FB
+    Listview_Colour =FFFFFF ; does not need converting as only used for background
+    ;Listview_Colour =E1E2FD ; does not need converting as only used for background
     StatusBar_Background_Colour =C4C5FB
     
   ; convert colours to correct format for listview color functions:
@@ -386,18 +388,19 @@ Display_List:
     ; Create the ListView gui
     Gui, 1: +AlwaysOnTop +ToolWindow -Caption
     Gui, 1: Color, %Tab_Colour% ; i.e. border/background (default = 404040) ; barely visible - right and bottom sides only
-    Gui, 1: Margin, 0, 0
+    Gui, 1: Margin, 4, 4
     ; Tab stuff
     Gui, 1: Font, s%Font_Size_Tab%, %Font_Type_Tab%
-    Gui, 1: Add, Tab2, vGui1_Tab HWNDhw_Gui1_Tab Background w%Gui1_Tab__width% -0x200, %Group_List% ; -0x200 = ! TCS_MULTILINE
-    Gui, 1: Tab, %Group_Active%,, Exact ; Future controls are owned by this tab
-    Gui, 1: Add, StatusBar, Background%StatusBar_Background_Colour% ; add before changing font
+    ;Gui, 1: Add, Tab2, vGui1_Tab HWNDhw_Gui1_Tab Background w%Gui1_Tab__width% -0x200, %Group_List% ; -0x200 = ! TCS_MULTILINE
+    ;Gui, 1: Tab, %Group_Active%,, Exact ; Future controls are owned by this tab
+    ;Gui, 1: Add, StatusBar, Background%StatusBar_Background_Colour% ; add before changing font
     Gui, 1: Font, s%Font_Size%, %Font_Type%
-    Gui, 1: Add, ListView, x-1 y+-4 w%Listview_Width% AltSubmit -Multi NoSort Background%Listview_Colour% Count10 gListView_Event vListView1 HWNDhw_LV_ColorChange,%Col_Title_List%
+    Gui, 1: Add, ListView, w%Listview_Width% AltSubmit -Hdr -Multi NoSort Background%Listview_Colour% Count10 gListView_Event vListView1 HWNDhw_LV_ColorChange,%Col_Title_List%
+    ;Gui, 1: Add, ListView, x-1 y+-4 w%Listview_Width% AltSubmit -Multi NoSort Background%Listview_Colour% Count10 gListView_Event vListView1 HWNDhw_LV_ColorChange,%Col_Title_List%
     LV_ModifyCol(2, "Integer") ; sort hidden column 2 as numbers
     SB_SetParts(SB_Width, SB_Width, SB_Width)
-    Gosub, SB_Update__CPU
-    SetTimer, SB_Update__CPU, 1000
+    ;Gosub, SB_Update__CPU
+    ;SetTimer, SB_Update__CPU, 1000
     }
   GuiControl,, Gui1_Tab, |%Group_List% ; update in case of changes
   GuiControl, ChooseString, Gui1_Tab, %Group_Active%
@@ -1660,7 +1663,7 @@ Return
 Key_Pressed_1st_Letter:
   Key_Pressed_ASCII =%A_EventInfo%
   Get__Selected_Row_and_RowText()
-
+	;TrayTip, ,%Key_Pressed_ASCII%
   If Key_Pressed_ASCII =93 ; Alt+Apps key - context menu
     {
     Gosub, GuiContextMenu
@@ -1672,14 +1675,30 @@ Key_Pressed_1st_Letter:
     GoSub Alt_Tab
     Return
     }
+
+  If (Key_Pressed_ASCII =17) ; likaci mod ctrl17, Caps40
+    {
+	Sleep 50
+	GetKeyState, AltIsDown, Alt, P
+	if AltIsDown<>D ;likaci mod  this is a fuck thing ,if don't Check the state of alt will double operated
+		Return
+    GoSub Alt_Shift_Tab
+    Return
+    }
+
   If (Key_Pressed_ASCII =38) ; Up arrow
     {
     GoSub Alt_Shift_Tab
     Return
     }
 
+  If (Key_Pressed_ASCII =none) ; todo Show desktop
+    {
+	WinActivate, ahk_class Progman
+    Return
+    }
   ; \ key - close window
-  If (Key_Pressed_ASCII =92 or Key_Pressed_ASCII =220 or Key_Pressed_ASCII =222) ; \ or Alt+\
+  If (Key_Pressed_ASCII =92 or Key_Pressed_ASCII =220 or Key_Pressed_ASCII =222 or Key_Pressed_ASCII=16) ; \ or Alt+\  or likaci mod shift 
     {
     If ( A_TickCount - Time_Since_Last_Alt_Close < 200 ) ; prevention of accidentally closing too many windows
       Return
@@ -1690,7 +1709,7 @@ Key_Pressed_1st_Letter:
     }
 
   ; / key - close all instances of exe
-  If (Key_Pressed_ASCII =47 or Key_Pressed_ASCII =191) ; / or Alt+/
+  If (Key_Pressed_ASCII =47 or Key_Pressed_ASCII =191 ) ; / or Alt+/
     {
     If ( A_TickCount - Time_Since_Last_Alt_Close < 200 ) ; prevention of accidentally closing too many windows
       Return
@@ -1903,8 +1922,8 @@ IniFile(Var, Section, Default="")
     If %Var% =ERROR
       %Var% = ; set to blank value instead of "error"
     }
-  Else If IniFile_Read_or_Write =Write
-    IniWrite, % %Var%, Alt_Tab_Settings.ini, %Section%, %Var%
+  ;Else If IniFile_Read_or_Write =Write
+  ;  IniWrite, % %Var%, Alt_Tab_Settings.ini, %Section%, %Var%
 }
 
 
