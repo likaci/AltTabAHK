@@ -1,2 +1,1 @@
-This repo is forked from https://github.com/studgeek/AltTabAHK
-to modify the script more "beautiful"
+![](https://github.com/likaci/AltTabAHK/blob/master/PreView.jpg)
